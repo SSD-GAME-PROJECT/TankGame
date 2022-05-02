@@ -51,32 +51,28 @@ public abstract class WObject {
 
     public void moveTankEnermy(int disX, int disY, int tick) {
         if (tick % 2 == 0) {
-            if (this.x < disX && this.y < disY) {
-                this.x += 1;
-                this.y += 1;
-            } else if (this.x < disX && this.y > disY) {
-                this.x += 1;
+            if (this.x == disX && this.y > disY) {
                 this.y -= 1;
-            } else if (this.x > disX && this.y < disY) {
-                this.x -= 1;
-                this.y += 1;
-            } else if (this.x > disX && this.y > disY) {
-                this.x -= 1;
-                this.y -= 1;
-            } else if (this.x == disX && this.y > disY) {
-                this.y -= 1;
+                direction = Direction.DOWN;
+                this.fire();
             } else if (this.x == disX && this.y < disY) {
                 this.y += 1;
+                direction = Direction.UP;
+                this.fire();
             } else if (this.x > disX && this.y == disY) {
                 this.x -= 1;
+                direction = Direction.LEFT;
+                this.fire();
             } else if (this.x < disX && this.y == disY) {
                 this.x += 1;
+                direction = Direction.RIGHT;
+                this.fire();
             } 
         }
     }
 
     public Bullet fire(){
-        Bullet b = new Bullet(getX(), getY(), direction);
+        Bullet b = new Bullet(this.getX(), this.getY(), direction);
         b.setPosition(b.getX() + direction.getX(), b.getY() + direction.getY());
         b.move();
         bullets.add(b);

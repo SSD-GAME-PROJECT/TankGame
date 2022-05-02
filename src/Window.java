@@ -104,6 +104,14 @@ public class Window extends JFrame implements Observer {
                 int y = bullet.getY();
                 g.fillRect(x * perCell, y * perCell, perCell, perCell);
             }
+            g.setColor(Color.cyan);
+            for (Enemy enemy: world.getEnemies()) {
+                for (Bullet bullet : enemy.getBullets()) {
+                    int x = bullet.getX();
+                    int y = bullet.getY();
+                    g.fillRect(x * perCell, y * perCell, perCell, perCell);
+                }
+            }
         }
     }
 

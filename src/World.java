@@ -51,6 +51,9 @@ public class World extends Observable {
                     }
                     for(int i = 0; i < enemies.length; i++) {
                         enemies[i].moveTankEnermy(player.getX(), player.getY(), tick);
+                        for (Bullet bullet : enemies[i].getBullets()){
+                            bullet.move();
+                        }
                     }
                     checkCollisions();
                     setChanged();
