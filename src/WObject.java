@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public abstract class WObject {
@@ -11,6 +12,8 @@ public abstract class WObject {
     // Random random = new Random();
     private Direction direction;
     private List<Bullet> bullets = new ArrayList<Bullet>();
+    private final long PERIOD = 250L; // Adjust to suit timing
+    private long lastTime = System.currentTimeMillis() - PERIOD;
 
     public WObject() {
     }
@@ -50,33 +53,35 @@ public abstract class WObject {
     }
 
     public void moveTankEnermy(int disX, int disY, int tick) {
-        if (tick % 2 == 0) {
-            if (this.x == disX && this.y > disY) {
-                this.y -= 1;
-                direction = Direction.DOWN;
-                this.fire();
-            } else if (this.x == disX && this.y < disY) {
-                this.y += 1;
-                direction = Direction.UP;
-                this.fire();
-            } else if (this.x > disX && this.y == disY) {
-                this.x -= 1;
-                direction = Direction.LEFT;
-                this.fire();
-            } else if (this.x < disX && this.y == disY) {
-                this.x += 1;
-                direction = Direction.RIGHT;
-                this.fire();
-            } 
+        if (this.x == disX && this.y > disY) {
+            this.y -= 1;
+            direction = Direction.UP;
+            this.fire();
+        } else if (this.x == disX && this.y < disY) {
+            this.y += 1;
+            direction = Direction.DOWN;
+            this.fire();
+        } else if (this.x > disX && this.y == disY) {
+            this.x -= 1;
+            direction = Direction.LEFT;
+            this.fire();
+        } else if (this.x < disX && this.y == disY) {
+            this.x += 1;
+            direction = Direction.RIGHT;
+            this.fire();
         }
     }
 
-    public Bullet fire(){
-        Bullet b = new Bullet(this.getX(), this.getY(), direction);
-        b.setPosition(b.getX(), b.getY());
-        b.move();
-        bullets.add(b);
-        return b;
+    public void fire() {
+        long thisTime = System.currentTimeMillis();
+
+        if ((thisTime - lastTime) >= PERIOD) {
+            lastTime = thisTime;
+            Bullet b = new Bullet(this.getX(), this.getY(), direction);
+            b.setPosition(b.getX(), b.getY());
+            b.move();
+            bullets.add(b);
+        }
     }
 
     public int getX() {

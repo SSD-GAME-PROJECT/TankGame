@@ -12,7 +12,7 @@ public class World extends Observable {
     private Player player;
     private Thread thread;
     private boolean notOver;
-    private long delayed = 500;
+    private long delayed = 250;
     private int enemyCount = 10;
     private List<Enemy> enemies = new ArrayList<Enemy>();
     private List<Enemy> enemiesStart = new ArrayList<Enemy>();
@@ -21,8 +21,8 @@ public class World extends Observable {
         this.size = size;
         tick = 0;
         player = new Player(size/2, size/2);
-//        enemies = new Enemy[enemyCount];
-//        enemiesStart = new Enemy[enemyCount];
+        //  enemies = new Enemy[enemyCount];
+        //  enemiesStart = new Enemy[enemyCount];
         Random random = new Random();
         for(int i = 0; i < enemyCount; i++) {
             int x = random.nextInt(size);
@@ -47,9 +47,16 @@ public class World extends Observable {
                 while(notOver) {
                     tick++;
                     player.move();
-                    for(Bullet b: player.getBullets()){
-                        b.move();
-                        enemies.removeIf(enemy -> enemy.collision(b));
+                    for(int b = 0; b < player.getBullets().size(); b++) {
+                        player.getBullets().get(b).move();
+                    }
+                    for(int i =0; i < enemies.size(); i++) {
+                        for(int b = 0; b < player.getBullets().size(); b++){
+                            if (enemies.get(i).collision(player.getBullets().get(b))){
+                                player.getBullets().remove(player.getBullets().get(b));
+                                enemies.remove(enemies.get(i));
+                            }
+                        }
                     }
 
                     for(Enemy enemy: enemies) {
