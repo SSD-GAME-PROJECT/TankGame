@@ -133,6 +133,7 @@ public class Window extends JFrame implements Observer {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     world.start();
+                    world.getPlayer().getBullets().clear();
                     replayButton.setEnabled(false);
                     Window.this.requestFocus();
                 }

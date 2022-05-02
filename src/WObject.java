@@ -76,7 +76,7 @@ public abstract class WObject {
     }
 
     public Bullet fire(){
-        Bullet b = new Bullet(getX() + direction.getX(), getY() + direction.getY(), direction);
+        Bullet b = new Bullet(getX(), getY(), direction);
         b.setPosition(b.getX() + direction.getX(), b.getY() + direction.getY());
         b.move();
         bullets.add(b);
