@@ -52,22 +52,30 @@ public abstract class WObject {
         this.y += dy;
     }
 
-    public void moveTankEnermy(int disX, int disY, int tick) {
+    public void moveTankEnermy(int disX, int disY, int tick, String string) {
         if (this.x == disX && this.y > disY) {
-            this.y -= 1;
-            direction = Direction.UP;
+            if(string != "up") {
+                this.y -= 1;
+                direction = Direction.UP;
+            }
             this.fire();
         } else if (this.x == disX && this.y < disY) {
-            this.y += 1;
-            direction = Direction.DOWN;
+            if(string!="down") {
+                this.y += 1;
+                direction = Direction.DOWN;
+            }
             this.fire();
         } else if (this.x > disX && this.y == disY) {
-            this.x -= 1;
-            direction = Direction.LEFT;
+            if(string!="left") {
+                this.x -= 1;
+                direction = Direction.LEFT;
+            }
             this.fire();
         } else if (this.x < disX && this.y == disY) {
-            this.x += 1;
-            direction = Direction.RIGHT;
+            if(string!="right") {
+                this.x += 1;
+                direction = Direction.RIGHT;
+            }
             this.fire();
         }
     }

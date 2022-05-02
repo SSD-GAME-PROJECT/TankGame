@@ -20,6 +20,7 @@ public class World extends Observable {
     private List<BlockTree> treeBlocks = new ArrayList<BlockTree>();
     private List<BlockBrick> brickBlocks = new ArrayList<BlockBrick>();
     private List<BlockSteel> steelBlocks = new ArrayList<BlockSteel>();
+    private String string;
 
     public World(int size) {
         this.size = size;
@@ -67,7 +68,8 @@ public class World extends Observable {
                     }
 
                     for(Enemy enemy: enemies) {
-                        enemy.moveTankEnermy(player.getX(), player.getY(), tick);
+                        string = where(enemy);
+                        enemy.moveTankEnermy(player.getX(), player.getY(), tick, string);
                         for (Bullet bullet : enemy.getBullets()){
                             bullet.move();
                         }
@@ -141,6 +143,38 @@ public class World extends Observable {
                 }
             }
         }
+    }
+
+    private String where(WObject enemy) {
+        for (BlockBrick brick : brickBlocks) {
+            if (brick.getX() == enemy.getX() && brick.getY() + 1 == enemy.getY()) {
+                return "up";
+            }
+            if (brick.getX() == enemy.getX() && brick.getY() - 1 == enemy.getY()) {
+                return "down";
+            }
+            if (brick.getX() + 1 == enemy.getX() && brick.getY() == enemy.getY()) {
+                return "left";
+            }
+            if (brick.getX() - 1 == enemy.getX() && brick.getY() == enemy.getY()) {
+                return "right";
+            }
+        }
+        for (BlockSteel steel : steelBlocks) {
+            if (steel.getX() == enemy.getX() && steel.getY() + 1 == enemy.getY()) {
+                return "up";
+            }
+            if (steel.getX() == enemy.getX() && steel.getY() - 1 == enemy.getY()) {
+                return "down";
+            }
+            if (steel.getX() + 1 == enemy.getX() && steel.getY() == enemy.getY()) {
+                return "left";
+            }
+            if (steel.getX() - 1 == enemy.getX() && steel.getY() == enemy.getY()) {
+                return "right";
+            }
+        }
+        return "";
     }
 
     public boolean atUp(WObject p){
