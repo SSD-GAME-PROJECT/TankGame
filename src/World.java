@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class World extends Observable {
 
@@ -13,21 +14,21 @@ public class World extends Observable {
     private boolean notOver;
     private long delayed = 500;
     private int enemyCount = 10;
-    private Enemy [] enemies;
-    private Enemy [] enemiesStart;
+    private List<Enemy> enemies = new ArrayList<Enemy>();
+    private List<Enemy> enemiesStart = new ArrayList<Enemy>();
 
     public World(int size) {
         this.size = size;
         tick = 0;
         player = new Player(size/2, size/2);
-        enemies = new Enemy[enemyCount];
-        enemiesStart = new Enemy[enemyCount];
+//        enemies = new Enemy[enemyCount];
+//        enemiesStart = new Enemy[enemyCount];
         Random random = new Random();
-        for(int i = 0; i < enemies.length; i++) {
+        for(int i = 0; i < enemyCount; i++) {
             int x = random.nextInt(size);
             int y = random.nextInt(size);
-            enemies[i] = new Enemy(x, y);
-            enemiesStart[i] = new Enemy(x, y);
+            enemies.add(new Enemy(x, y));
+            enemiesStart.add(new Enemy(x, y));
         }
         // enemies[enemies.length] = new Enemy((size/2), (size/2)+2);
     }
@@ -35,8 +36,8 @@ public class World extends Observable {
     public void start() {
         player.reset();
         player.setPosition(size/2, size/2);
-        for(int i = 0; i < enemies.length; i++) {
-            enemies[i].setPosition(enemiesStart[i].getX(), enemiesStart[i].getY());
+        for(int i = 0; i < enemies.size(); i++) {
+            enemies.get(i).setPosition(enemiesStart.get(i).getX(), enemiesStart.get(i).getY());
         }
         tick = 0;
         notOver = true;
@@ -48,13 +49,16 @@ public class World extends Observable {
                     player.move();
                     for(Bullet b: player.getBullets()){
                         b.move();
+                        enemies.removeIf(enemy -> enemy.collision(b));
                     }
-                    for(int i = 0; i < enemies.length; i++) {
-                        enemies[i].moveTankEnermy(player.getX(), player.getY(), tick);
-                        for (Bullet bullet : enemies[i].getBullets()){
+
+                    for(Enemy enemy: enemies) {
+                        enemy.moveTankEnermy(player.getX(), player.getY(), tick);
+                        for (Bullet bullet : enemy.getBullets()){
                             bullet.move();
                         }
                     }
+
                     checkCollisions();
                     setChanged();
                     notifyObservers();
@@ -109,12 +113,11 @@ public class World extends Observable {
         player.turnEast();
     }
 
-    public Enemy[] getEnemies() {
+    public List<Enemy> getEnemies() {
         return enemies;
     }
 
     public boolean isGameOver() {
         return !notOver;
     }
-
 }
