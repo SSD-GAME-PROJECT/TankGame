@@ -73,7 +73,7 @@ public abstract class WObject {
 
     public Bullet fire(){
         Bullet b = new Bullet(this.getX(), this.getY(), direction);
-        b.setPosition(b.getX() + direction.getX(), b.getY() + direction.getY());
+        b.setPosition(b.getX(), b.getY());
         b.move();
         bullets.add(b);
         return b;
@@ -102,5 +102,9 @@ public abstract class WObject {
 
     public List<Bullet> getBullets() {
         return bullets;
+    }
+
+    public boolean collision(Bullet b) {
+        return b.getX() == this.x && b.getY() == this.y;
     }
 }
