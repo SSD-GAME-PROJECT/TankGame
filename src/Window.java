@@ -62,6 +62,9 @@ public class Window extends JFrame implements Observer {
             paintPlayer(g);
             paintEnemies(g);
             paintBullets(g);
+            paintTreeBlock(g);
+            paintSteelBlock(g);
+            paintBrickBlock(g);
         }
 
         private void paintGrids(Graphics g) {
@@ -111,6 +114,34 @@ public class Window extends JFrame implements Observer {
                     int y = bullet.getY();
                     g.fillRect(x * perCell, y * perCell, perCell, perCell);
                 }
+            }
+        }
+
+        public void paintTreeBlock(Graphics g) {
+            int perCell = size/world.getSize();
+            g.setColor(Color.pink);
+            for(BlockTree tree: world.getTreeBlocks()){
+                int x = tree.getX();
+                int y = tree.getY();
+                g.fillRect(x * perCell, y * perCell, perCell, perCell);
+            }
+        }
+        public void paintSteelBlock(Graphics g) {
+            int perCell = size/world.getSize();
+            g.setColor(Color.DARK_GRAY);
+            for(BlockSteel steel: world.getSteelBlocks()){
+                int x = steel.getX();
+                int y = steel.getY();
+                g.fillRect(x * perCell, y * perCell, perCell, perCell);
+            }
+        }
+        public void paintBrickBlock(Graphics g) {
+            int perCell = size/world.getSize();
+            g.setColor(Color.YELLOW);
+            for(BlockBrick brick: world.getBrickBlocks()){
+                int x = brick.getX();
+                int y = brick.getY();
+                g.fillRect(x * perCell, y * perCell, perCell, perCell);
             }
         }
     }
@@ -170,19 +201,19 @@ public class Window extends JFrame implements Observer {
     class Controller extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-            if(e.getKeyCode() == KeyEvent.VK_UP) {
+            if(e.getKeyCode() == KeyEvent.VK_UP&& world.atUp(world.getPlayer())) {
                 Command c = new CommandTurnNorth(world.getPlayer(), world.getTick());
                 c.execute();
                 replays.add(c);
-            } else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+            } else if(e.getKeyCode() == KeyEvent.VK_DOWN && world.atDown(world.getPlayer())) {
                 Command c = new CommandTurnSouth(world.getPlayer(), world.getTick());
                 c.execute();
                 replays.add(c);
-            } else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+            } else if(e.getKeyCode() == KeyEvent.VK_LEFT && world.atLeft(world.getPlayer())) {
                 Command c = new CommandTurnWest(world.getPlayer(), world.getTick());
                 c.execute();
                 replays.add(c);
-            } else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            } else if(e.getKeyCode() == KeyEvent.VK_RIGHT && world.atRight(world.getPlayer())) {
                 Command c = new CommandTurnEast(world.getPlayer(), world.getTick());
                 c.execute();
                 replays.add(c);

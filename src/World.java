@@ -17,6 +17,10 @@ public class World extends Observable {
     private List<Enemy> enemies = new ArrayList<Enemy>();
     private List<Enemy> enemiesStart = new ArrayList<Enemy>();
 
+    private List<BlockTree> treeBlocks = new ArrayList<BlockTree>();
+    private List<BlockBrick> brickBlocks = new ArrayList<BlockBrick>();
+    private List<BlockSteel> steelBlocks = new ArrayList<BlockSteel>();
+
     public World(int size) {
         this.size = size;
         tick = 0;
@@ -31,6 +35,9 @@ public class World extends Observable {
             enemiesStart.add(new Enemy(x, y));
         }
         // enemies[enemies.length] = new Enemy((size/2), (size/2)+2);
+        setTreeBlocks();
+        setSteelBlocks();
+        setBrickBlocks();
     }
 
     public void start() {
@@ -65,6 +72,8 @@ public class World extends Observable {
                             bullet.move();
                         }
                     }
+                    hitBrick();
+                    hitSteel();
 
                     checkCollisions();
                     setChanged();
@@ -90,6 +99,104 @@ public class World extends Observable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private void hitBrick(){
+        for(int i =0; i < enemies.size(); i++) {
+            for(int b = 0; b < enemies.get(i).getBullets().size(); b++){
+                for (int brick=0; brick<brickBlocks.size(); brick++) {
+                    if (brickBlocks.get(brick).isBulletHit(enemies.get(i).getBullets().get(b))) {
+                        enemies.get(i).getBullets().remove(enemies.get(i).getBullets().get(b));
+                        brickBlocks.remove(brickBlocks.get(brick));
+                    }
+                }
+            }
+        }
+        for(int b = 0; b < player.getBullets().size(); b++){
+            for (int brick=0; brick<brickBlocks.size(); brick++) {
+                if (brickBlocks.get(brick).isBulletHit(player.getBullets().get(b))) {
+                    player.getBullets().remove(player.getBullets().get(b));
+                    brickBlocks.remove(brickBlocks.get(brick));
+                }
+            }
+        }
+    }
+
+    private void hitSteel(){
+        for(int i =0; i < enemies.size(); i++) {
+            for(int b = 0; b < enemies.get(i).getBullets().size(); b++){
+                for (int steel=0; steel<steelBlocks.size(); steel++) {
+                    if (steelBlocks.get(steel).isBulletHit(enemies.get(i).getBullets().get(b))) {
+                        enemies.get(i).getBullets().remove(enemies.get(i).getBullets().get(b));
+                        break;
+                    }
+                }
+            }
+        }
+        for(int b = 0; b < player.getBullets().size(); b++){
+            for (int steel=0; steel<steelBlocks.size(); steel++) {
+                if (steelBlocks.get(steel).isBulletHit(player.getBullets().get(b))) {
+                    player.getBullets().remove(player.getBullets().get(b));
+                    break;
+                }
+            }
+        }
+    }
+
+    public boolean atUp(WObject p){
+        for(BlockBrick brick: brickBlocks){
+            if(brick.getX()==p.getX()&&brick.getY()+1==p.getY()){
+                return false;
+            }
+        }
+        for(BlockSteel steel: steelBlocks){
+            if(steel.getX()==p.getX()&&steel.getY()+1==p.getY()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean atDown(WObject p){
+        for(BlockBrick brick: brickBlocks){
+            if(brick.getX()==p.getX()&&brick.getY()-1==p.getY()){
+                return false;
+            }
+        }
+        for(BlockSteel steel: steelBlocks){
+            if(steel.getX()==p.getX()&&steel.getY()-1==p.getY()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean atLeft(WObject p){
+        for(BlockBrick brick: brickBlocks){
+            if(brick.getX()+1==p.getX()&&brick.getY()==p.getY()){
+                return false;
+            }
+        }
+        for(BlockSteel steel: steelBlocks){
+            if(steel.getX()+1==p.getX()&&steel.getY()==p.getY()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean atRight(WObject p){
+        for(BlockBrick brick: brickBlocks){
+            if(brick.getX()-1==p.getX()&&brick.getY()==p.getY()){
+                return false;
+            }
+        }
+        for(BlockSteel steel: steelBlocks){
+            if(steel.getX()-1==p.getX()&&steel.getY()==p.getY()){
+                return false;
+            }
+        }
+        return true;
     }
 
     public int getTick() {
@@ -126,5 +233,50 @@ public class World extends Observable {
 
     public boolean isGameOver() {
         return !notOver;
+    }
+
+    private void setTreeBlocks(){
+        BlockTree tree = new BlockTree(10, 10);
+        BlockTree tree2 = new BlockTree(11, 10);
+        BlockTree tree3 = new BlockTree(12, 10);
+        BlockTree tree4 = new BlockTree(10, 11);
+        BlockTree tree5 = new BlockTree(11, 11);
+        BlockTree tree6 = new BlockTree(12, 11);
+        treeBlocks.add(tree);
+        treeBlocks.add(tree2);
+        treeBlocks.add(tree3);
+        treeBlocks.add(tree4);
+        treeBlocks.add(tree5);
+        treeBlocks.add(tree6);
+    }
+
+    public List<BlockTree> getTreeBlocks() {
+        return treeBlocks;
+    }
+
+    private void setBrickBlocks(){
+        BlockBrick brick = new BlockBrick(8, 4);
+        BlockBrick brick2 = new BlockBrick(9, 4);
+        BlockBrick brick3 = new BlockBrick(10, 4);
+        brickBlocks.add(brick);
+        brickBlocks.add(brick2);
+        brickBlocks.add(brick3);
+    }
+
+    public List<BlockBrick> getBrickBlocks() {
+        return brickBlocks;
+    }
+
+    private void setSteelBlocks(){
+        BlockSteel steel = new BlockSteel(16, 18);
+        BlockSteel steel2 = new BlockSteel(17, 18);
+        BlockSteel steel3 = new BlockSteel(18, 18);
+        steelBlocks.add(steel);
+        steelBlocks.add(steel2);
+        steelBlocks.add(steel3);
+    }
+
+    public List<BlockSteel> getSteelBlocks() {
+        return steelBlocks;
     }
 }
