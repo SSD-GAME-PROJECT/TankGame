@@ -28,7 +28,7 @@ public class Window extends JFrame implements Observer {
         add(gui, BorderLayout.SOUTH);
         world = new World(25);
         world.addObserver(this);
-        setSize(size, size);
+        setSize(size+12, size+70);
         setAlwaysOnTop(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
@@ -65,6 +65,7 @@ public class Window extends JFrame implements Observer {
             paintTreeBlock(g);
             paintSteelBlock(g);
             paintBrickBlock(g);
+            paintStreamBlock(g);
         }
 
         private void paintGrids(Graphics g) {
@@ -119,29 +120,35 @@ public class Window extends JFrame implements Observer {
 
         public void paintTreeBlock(Graphics g) {
             int perCell = size/world.getSize();
-            g.setColor(Color.pink);
             for(BlockTree tree: world.getTreeBlocks()){
                 int x = tree.getX();
                 int y = tree.getY();
-                g.fillRect(x * perCell, y * perCell, perCell, perCell);
+                g.drawImage(new ImageIcon("img/Tree.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
             }
         }
         public void paintSteelBlock(Graphics g) {
             int perCell = size/world.getSize();
-            g.setColor(Color.DARK_GRAY);
             for(BlockSteel steel: world.getSteelBlocks()){
                 int x = steel.getX();
                 int y = steel.getY();
-                g.fillRect(x * perCell, y * perCell, perCell, perCell);
+                g.drawImage(new ImageIcon("img/Steel.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
             }
         }
         public void paintBrickBlock(Graphics g) {
             int perCell = size/world.getSize();
-            g.setColor(Color.YELLOW);
             for(BlockBrick brick: world.getBrickBlocks()){
                 int x = brick.getX();
                 int y = brick.getY();
-                g.fillRect(x * perCell, y * perCell, perCell, perCell);
+                g.drawImage(new ImageIcon("img/Brick.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+            }
+        }
+
+        public void paintStreamBlock(Graphics g){
+            int perCell = size/world.getSize();
+            for(BlockStream stream: world.getStreamBlocks()){
+                int x = stream.getX();
+                int y = stream.getY();
+                g.drawImage(new ImageIcon("img/Stream.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
             }
         }
     }
