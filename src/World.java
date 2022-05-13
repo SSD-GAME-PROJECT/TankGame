@@ -18,11 +18,14 @@ public class World extends Observable {
     private List<BlockBrick> brickBlocks = new ArrayList<BlockBrick>();
     private List<BlockSteel> steelBlocks = new ArrayList<BlockSteel>();
     private List<BlockStream> streamBlocks = new ArrayList<BlockStream>();
+    private int hitEnemy;
+    private boolean win;
 
     public World(int size) {
         this.size = size;
         tick = 0;
         player = new Player(13, 24);
+        hitEnemy = 0;
         setEnemies();
         setTreeBlocks();
         setSteelBlocks();
@@ -38,10 +41,12 @@ public class World extends Observable {
         }
         tick = 0;
         notOver = true;
+        win = false;
+        hitEnemy = 0;
         thread = new Thread() {
             @Override
             public void run() {
-                while(notOver) {
+                while(notOver&&!win) {
                     tick++;
                     player.move(where(player));
                     for(int b = 0; b < player.getBullets().size(); b++) {
@@ -52,6 +57,10 @@ public class World extends Observable {
                             if (enemies.get(i).collision(player.getBullets().get(b))){
                                 player.getBullets().remove(player.getBullets().get(b));
                                 enemies.remove(enemies.get(i));
+                                hitEnemy++;
+                                if(hitEnemy == enemiesStart.size()){
+                                    win = true;
+                                }
                             }
                         }
                     }
@@ -372,5 +381,12 @@ public class World extends Observable {
 
     public List<BlockSteel> getSteelBlocks() {
         return steelBlocks;
+    }
+
+    public int getHitEnemy(){
+        return hitEnemy;
+    }
+    public boolean isWinning(){
+        return win;
     }
 }

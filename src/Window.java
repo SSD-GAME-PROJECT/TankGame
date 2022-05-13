@@ -37,6 +37,7 @@ public class Window extends JFrame implements Observer {
     public void update(Observable o, Object arg) {
         renderer.repaint();
         gui.updateTick(world.getTick());
+        gui.updateScore(world.getHitEnemy());
 
         for (Command c: replays){
             if (c.getTick() == world.getTick()){
@@ -45,6 +46,10 @@ public class Window extends JFrame implements Observer {
         }
         if(world.isGameOver()) {
             gui.showGameOverLabel();
+            gui.enableReplayButton();
+        }
+        if(world.isWinning()) {
+            gui.showWinningLabel();
             gui.enableReplayButton();
         }
     }
@@ -156,14 +161,18 @@ public class Window extends JFrame implements Observer {
     class Gui extends JPanel {
 
         private JLabel tickLabel;
+        private JLabel scoreLabel;
         private JButton startButton;
         private JButton replayButton;
         private JLabel gameOverLabel;
+        private JLabel winningLabel;
 
         public Gui() {
             setLayout(new FlowLayout());
             tickLabel = new JLabel("Tick: 0");
             add(tickLabel);
+            scoreLabel = new JLabel("Score: 0");
+            add(scoreLabel);
             startButton = new JButton("Start");
             startButton.addActionListener(new ActionListener() {
                 @Override
@@ -190,14 +199,26 @@ public class Window extends JFrame implements Observer {
             gameOverLabel.setForeground(Color.red);
             gameOverLabel.setVisible(false);
             add(gameOverLabel);
+            winningLabel = new JLabel("GREAT JOB");
+            winningLabel.setForeground(Color.GREEN);
+            winningLabel.setVisible(false);
+            add(winningLabel);
         }
 
         public void updateTick(int tick) {
             tickLabel.setText("Tick: " + tick);
         }
 
+        public void updateScore(int score) {
+            scoreLabel.setText("Score: " + score);
+        }
+
         public void showGameOverLabel() {
             gameOverLabel.setVisible(true);
+        }
+
+        public void showWinningLabel() {
+            winningLabel.setVisible(true);
         }
 
         public void enableReplayButton() {
