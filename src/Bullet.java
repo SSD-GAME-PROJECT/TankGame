@@ -29,6 +29,10 @@ public class Bullet {
     public void move(){
         this.setPosition(getX() + direction.getX(), getY() + direction.getY());
     }
+
+    public boolean bulletCollision(Bullet b){
+        return this.x == b.getX() && this.y == b.getY();
+    }
 }
 
 
