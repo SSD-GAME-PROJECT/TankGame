@@ -28,15 +28,18 @@ public class Window extends JFrame implements Observer {
         add(gui, BorderLayout.SOUTH);
         world = new World(25);
         world.addObserver(this);
-        setSize(size + 12, size + 70);
+        setSize(size, size+70);
         setAlwaysOnTop(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setTitle("Tank Game");
+        setResizable(false);
     }
 
     @Override
     public void update(Observable o, Object arg) {
         renderer.repaint();
         gui.updateTick(world.getTick());
+        gui.updateScore(world.getHitEnemy());
 
         for (Command c: replays){
             if (c.getTick() == world.getTick()){
@@ -45,6 +48,10 @@ public class Window extends JFrame implements Observer {
         }
         if(world.isGameOver()) {
             gui.showGameOverLabel();
+            gui.enableReplayButton();
+        }
+        if(world.isWinning()) {
+            gui.showWinningLabel();
             gui.enableReplayButton();
         }
     }
@@ -66,6 +73,7 @@ public class Window extends JFrame implements Observer {
             paintTreeBlock(g);
             paintSteelBlock(g);
             paintBrickBlock(g);
+            paintStreamBlock(g);
         }
 
         private void paintGrids(Graphics g) {
@@ -133,29 +141,35 @@ public class Window extends JFrame implements Observer {
         }
         public void paintTreeBlock(Graphics g) {
             int perCell = size/world.getSize();
-            g.setColor(Color.pink);
             for(BlockTree tree: world.getTreeBlocks()){
                 int x = tree.getX();
                 int y = tree.getY();
-                g.fillRect(x * perCell, y * perCell, perCell, perCell);
+                g.drawImage(new ImageIcon("img/Tree.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
             }
         }
         public void paintSteelBlock(Graphics g) {
             int perCell = size/world.getSize();
-            g.setColor(Color.DARK_GRAY);
             for(BlockSteel steel: world.getSteelBlocks()){
                 int x = steel.getX();
                 int y = steel.getY();
-                g.fillRect(x * perCell, y * perCell, perCell, perCell);
+                g.drawImage(new ImageIcon("img/Steel.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
             }
         }
         public void paintBrickBlock(Graphics g) {
             int perCell = size/world.getSize();
-            g.setColor(Color.YELLOW);
             for(BlockBrick brick: world.getBrickBlocks()){
                 int x = brick.getX();
                 int y = brick.getY();
-                g.fillRect(x * perCell, y * perCell, perCell, perCell);
+                g.drawImage(new ImageIcon("img/Brick.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+            }
+        }
+
+        public void paintStreamBlock(Graphics g){
+            int perCell = size/world.getSize();
+            for(BlockStream stream: world.getStreamBlocks()){
+                int x = stream.getX();
+                int y = stream.getY();
+                g.drawImage(new ImageIcon("img/Stream.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
             }
         }
     }
@@ -163,14 +177,18 @@ public class Window extends JFrame implements Observer {
     class Gui extends JPanel {
 
         private JLabel tickLabel;
+        private JLabel scoreLabel;
         private JButton startButton;
         private JButton replayButton;
         private JLabel gameOverLabel;
+        private JLabel winningLabel;
 
         public Gui() {
             setLayout(new FlowLayout());
             tickLabel = new JLabel("Tick: 0");
             add(tickLabel);
+            scoreLabel = new JLabel("Score: 0");
+            add(scoreLabel);
             startButton = new JButton("Start");
             startButton.addActionListener(new ActionListener() {
                 @Override
@@ -198,14 +216,26 @@ public class Window extends JFrame implements Observer {
             gameOverLabel.setForeground(Color.red);
             gameOverLabel.setVisible(false);
             add(gameOverLabel);
+            winningLabel = new JLabel("GREAT JOB");
+            winningLabel.setForeground(Color.GREEN);
+            winningLabel.setVisible(false);
+            add(winningLabel);
         }
 
         public void updateTick(int tick) {
             tickLabel.setText("Tick: " + tick);
         }
 
+        public void updateScore(int score) {
+            scoreLabel.setText("Score: " + score);
+        }
+
         public void showGameOverLabel() {
             gameOverLabel.setVisible(true);
+        }
+
+        public void showWinningLabel() {
+            winningLabel.setVisible(true);
         }
 
         public void enableReplayButton() {

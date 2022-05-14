@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public abstract class WObject {
@@ -9,7 +8,6 @@ public abstract class WObject {
 
     private int dx;
     private int dy;
-    // Random random = new Random();
     private Direction direction;
     private List<Bullet> bullets = new ArrayList<Bullet>();
     private final long PERIOD = 250L; // Adjust to suit timing
@@ -47,32 +45,38 @@ public abstract class WObject {
         dy = 0;
     }
 
-    public void move() {
+    public void move(String nearBlock) {
+        if(((nearBlock == "up" || y == 0) && dy == -1) || ((nearBlock == "down" || y == 24) && dy == 1 )) {
+            dy = 0;
+        }else if(((nearBlock == "right" || x == 24) && dx == 1) || ((nearBlock == "left" || x == 0) && dx == -1)) {
+            dx = 0;
+        }
         this.x += dx;
         this.y += dy;
+
     }
 
-    public void moveTankEnermy(int disX, int disY, int tick, String string) {
+    public void moveTankEnermy(int disX, int disY, int tick, String nearBlock) {
         if (this.x == disX && this.y > disY) {
-            if(string != "up") {
+            if(nearBlock != "up") {
                 this.y -= 1;
                 direction = Direction.UP;
             }
             this.fire();
         } else if (this.x == disX && this.y < disY) {
-            if(string!="down") {
+            if(nearBlock!="down") {
                 this.y += 1;
                 direction = Direction.DOWN;
             }
             this.fire();
         } else if (this.x > disX && this.y == disY) {
-            if(string!="left") {
+            if(nearBlock!="left") {
                 this.x -= 1;
                 direction = Direction.LEFT;
             }
             this.fire();
         } else if (this.x < disX && this.y == disY) {
-            if(string!="right") {
+            if(nearBlock!="right") {
                 this.x += 1;
                 direction = Direction.RIGHT;
             }
