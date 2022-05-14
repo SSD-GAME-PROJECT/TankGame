@@ -97,12 +97,26 @@ public class World extends Observable {
                             bullet.move();
                         }
                     }
-
+                    // player collision
+                    playerBulletCollision();
                     // check bullet collision
 //                    if (!enemies.isEmpty()) {
+//                        for (int e = 0; e < enemies.size(); e++){
+//                            for (int b = 0; b < enemies.get(e).getBullets().size(); b++){
+//                                for (int bp = 0; bp < player.getBullets().size(); bp++) {
+//                                    if (enemies.get(e).getBullets().get(b).bulletCollision(player.getBullets().get(bp))) {
+//                                        player.getBullets().remove(player.getBullets().get(bp));
+//                                        enemies.get(e).getBullets().remove(enemies.get(e).getBullets().get(bp));
+//                                    }
+//                                }
+//                            }
+//                        }
 //                        for (Enemy e : enemies) {
 //                            for (Bullet enemyBullet : e.getBullets()) {
 //                                player.getBullets().removeIf(enemyBullet::bulletCollision);
+//                                for (Bullet bp : player.getBullets()) {
+//                                    e.getBullets().removeIf(bp::bulletCollision);
+//                                }
 //                            }
 //                        }
 //                        for (Enemy e : enemies) {
@@ -111,17 +125,10 @@ public class World extends Observable {
 //                            }
 //                        }
 //                    }
-//                    if (!player.getBullets().isEmpty()){
-//                        for (Bullet pb: player.getBullets()){
-//                            for (Enemy e : enemies){
-//                                e.getBullets().removeIf(pb::bulletCollision);
-//                            }
-//                        }
-//                    }
 
+                    playerBulletCollision();
                     hitBrick();
                     hitSteel();
-
                     checkCollisions();
                     setChanged();
                     notifyObservers();
@@ -130,6 +137,19 @@ public class World extends Observable {
             }
         };
         thread.start();
+    }
+
+    private void playerBulletCollision(){
+        for (Bullet bp1 : player.getBullets()) {
+            if (player2.collision(bp1)) {
+                notOver = false;
+            }
+        }
+        for (Bullet bp2 : player2.getBullets()) {
+            if (player.collision(bp2)) {
+                    notOver = false;
+            }
+        }
     }
 
     private void checkCollisions() {
