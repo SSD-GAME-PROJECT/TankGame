@@ -10,10 +10,11 @@ public class World extends Observable {
     private int size;
 
     private Player player;
+    private Player player2;
     private Thread thread;
     private boolean notOver;
     private long delayed = 250;
-    private int enemyCount = 10;
+    private int enemyCount = 3;
     private List<Enemy> enemies = new ArrayList<Enemy>();
     private List<Enemy> enemiesStart = new ArrayList<Enemy>();
 
@@ -26,6 +27,7 @@ public class World extends Observable {
         this.size = size;
         tick = 0;
         player = new Player(size/2, size/2);
+        player2 = new Player(size/2 + 3, size/2 + 3);
         //  enemies = new Enemy[enemyCount];
         //  enemiesStart = new Enemy[enemyCount];
         Random random = new Random();
@@ -43,7 +45,9 @@ public class World extends Observable {
 
     public void start() {
         player.reset();
+        player2.reset();
         player.setPosition(size/2, size/2);
+        player2.setPosition(size/2 + 3, size/2 + 3);
         for(int i = 0; i < enemies.size(); i++) {
             enemies.get(i).setPosition(enemiesStart.get(i).getX(), enemiesStart.get(i).getY());
         }
@@ -55,8 +59,16 @@ public class World extends Observable {
                 while(notOver) {
                     tick++;
                     player.move();
-                    for(int b = 0; b < player.getBullets().size(); b++) {
-                        player.getBullets().get(b).move();
+                    player2.move();
+                    if (!player.getBullets().isEmpty()) {
+                        for (int b = 0; b < player.getBullets().size(); b++) {
+                            player.getBullets().get(b).move();
+                        }
+                    }
+                    if (!player2.getBullets().isEmpty()) {
+                        for (int b = 0; b < player2.getBullets().size(); b++) {
+                            player2.getBullets().get(b).move();
+                        }
                     }
                     for(int i =0; i < enemies.size(); i++) {
                         for(int b = 0; b < player.getBullets().size(); b++){
@@ -67,16 +79,56 @@ public class World extends Observable {
                         }
                     }
 
+                    for(int i =0; i < enemies.size(); i++) {
+                        for(int b = 0; b < player2.getBullets().size(); b++){
+                            if (enemies.get(i).collision(player2.getBullets().get(b))){
+                                player2.getBullets().remove(player2.getBullets().get(b));
+                                enemies.remove(enemies.get(i));
+                            }
+                        }
+                    }
+
+                    // enemy move and shoot the bullet
                     for(Enemy enemy: enemies) {
                         string = where(enemy);
                         enemy.moveTankEnermy(player.getX(), player.getY(), tick, string);
+                        enemy.moveTankEnermy(player2.getX(), player2.getY(), tick, string);
                         for (Bullet bullet : enemy.getBullets()){
                             bullet.move();
                         }
                     }
+                    // player collision
+                    playerBulletCollision();
+                    // check bullet collision
+//                    if (!enemies.isEmpty()) {
+//                        for (int e = 0; e < enemies.size(); e++){
+//                            for (int b = 0; b < enemies.get(e).getBullets().size(); b++){
+//                                for (int bp = 0; bp < player.getBullets().size(); bp++) {
+//                                    if (enemies.get(e).getBullets().get(b).bulletCollision(player.getBullets().get(bp))) {
+//                                        player.getBullets().remove(player.getBullets().get(bp));
+//                                        enemies.get(e).getBullets().remove(enemies.get(e).getBullets().get(bp));
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        for (Enemy e : enemies) {
+//                            for (Bullet enemyBullet : e.getBullets()) {
+//                                player.getBullets().removeIf(enemyBullet::bulletCollision);
+//                                for (Bullet bp : player.getBullets()) {
+//                                    e.getBullets().removeIf(bp::bulletCollision);
+//                                }
+//                            }
+//                        }
+//                        for (Enemy e : enemies) {
+//                            for (Bullet enemyBullet : e.getBullets()) {
+//                                player2.getBullets().removeIf(enemyBullet::bulletCollision);
+//                            }
+//                        }
+//                    }
+
+                    playerBulletCollision();
                     hitBrick();
                     hitSteel();
-
                     checkCollisions();
                     setChanged();
                     notifyObservers();
@@ -87,11 +139,32 @@ public class World extends Observable {
         thread.start();
     }
 
+    private void playerBulletCollision(){
+        for (Bullet bp1 : player.getBullets()) {
+            if (player2.collision(bp1)) {
+                notOver = false;
+            }
+        }
+        for (Bullet bp2 : player2.getBullets()) {
+            if (player.collision(bp2)) {
+                    notOver = false;
+            }
+        }
+    }
+
     private void checkCollisions() {
         for(Enemy e : enemies) {
             if(e.hit(player)) {
                 notOver = false;
+            } else if (e.hit(player2)) {
+                notOver = false;
             }
+            for (Bullet b : e.getBullets())
+                if(player.collision(b)){
+                    notOver = false;
+                } else if(player2.collision(b)){
+                    notOver = false;
+                }
         }
     }
 
@@ -114,11 +187,23 @@ public class World extends Observable {
                 }
             }
         }
-        for(int b = 0; b < player.getBullets().size(); b++){
-            for (int brick=0; brick<brickBlocks.size(); brick++) {
-                if (brickBlocks.get(brick).isBulletHit(player.getBullets().get(b))) {
-                    player.getBullets().remove(player.getBullets().get(b));
-                    brickBlocks.remove(brickBlocks.get(brick));
+        if (!player.getBullets().isEmpty()) {
+            for (int b = 0; b < player.getBullets().size(); b++) {
+                for (int brick = 0; brick < brickBlocks.size(); brick++) {
+                    if (brickBlocks.get(brick).isBulletHit(player.getBullets().get(b))) {
+                        player.getBullets().remove(player.getBullets().get(b));
+                        brickBlocks.remove(brickBlocks.get(brick));
+                    }
+                }
+            }
+        }
+        if (!player2.getBullets().isEmpty()) {
+            for (int b = 0; b < player2.getBullets().size(); b++) {
+                for (int brick = 0; brick < brickBlocks.size(); brick++) {
+                    if (brickBlocks.get(brick).isBulletHit(player2.getBullets().get(b))) {
+                        player2.getBullets().remove(player2.getBullets().get(b));
+                        brickBlocks.remove(brickBlocks.get(brick));
+                    }
                 }
             }
         }
@@ -139,6 +224,14 @@ public class World extends Observable {
             for (int steel=0; steel<steelBlocks.size(); steel++) {
                 if (steelBlocks.get(steel).isBulletHit(player.getBullets().get(b))) {
                     player.getBullets().remove(player.getBullets().get(b));
+                    break;
+                }
+            }
+        }
+        for(int b = 0; b < player2.getBullets().size(); b++){
+            for (int steel=0; steel<steelBlocks.size(); steel++) {
+                if (steelBlocks.get(steel).isBulletHit(player2.getBullets().get(b))) {
+                    player2.getBullets().remove(player2.getBullets().get(b));
                     break;
                 }
             }
@@ -243,6 +336,10 @@ public class World extends Observable {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public Player getPlayer2(){
+        return player2;
     }
 
     public void turnPlayerNorth() {
