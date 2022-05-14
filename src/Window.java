@@ -67,6 +67,7 @@ public class Window extends JFrame implements Observer {
             super.paint(g);
             paintGrids(g);
             paintPlayer(g);
+            paintPlayer2(g);
             paintEnemies(g);
             paintBullets(g);
             paintTreeBlock(g);
@@ -97,13 +98,21 @@ public class Window extends JFrame implements Observer {
             g.fillRect(x * perCell,y * perCell,perCell, perCell);
         }
 
+        private void paintPlayer2(Graphics g) {
+            int perCell = size/world.getSize();
+            int x = world.getPlayer2().getX();
+            int y = world.getPlayer2().getY();
+            g.setColor(Color.magenta);
+            g.fillRect(x * perCell,y * perCell,perCell, perCell);
+        }
+
         private void paintEnemies(Graphics g) {
             int perCell = size/world.getSize();
             g.setColor(Color.red);
             for(Enemy e : world.getEnemies()) {
                 int x = e.getX();
                 int y = e.getY();
-                g.fillRect(x * perCell,y * perCell,perCell, perCell);
+                g.fillRect(x * perCell, y * perCell,perCell, perCell);
             }
         }
 
@@ -111,6 +120,12 @@ public class Window extends JFrame implements Observer {
             int perCell = size/world.getSize();
             g.setColor(Color.black);
             for (Bullet bullet: world.getPlayer().getBullets()) {
+                int x = bullet.getX();
+                int y = bullet.getY();
+                g.fillRect(x * perCell, y * perCell, perCell, perCell);
+            }
+            g.setColor(Color.DARK_GRAY);
+            for (Bullet bullet: world.getPlayer2().getBullets()) {
                 int x = bullet.getX();
                 int y = bullet.getY();
                 g.fillRect(x * perCell, y * perCell, perCell, perCell);
@@ -124,7 +139,6 @@ public class Window extends JFrame implements Observer {
                 }
             }
         }
-
         public void paintTreeBlock(Graphics g) {
             int perCell = size/world.getSize();
             for(BlockTree tree: world.getTreeBlocks()){
@@ -191,6 +205,7 @@ public class Window extends JFrame implements Observer {
                 public void actionPerformed(ActionEvent e) {
                     world.start();
                     world.getPlayer().getBullets().clear();
+                    world.getPlayer2().getBullets().clear();
                     replayButton.setEnabled(false);
                     Window.this.requestFocus();
                 }
@@ -247,12 +262,28 @@ public class Window extends JFrame implements Observer {
                 Command c = new CommandTurnEast(world.getPlayer(), world.getTick());
                 c.execute();
                 replays.add(c);
-            } else if(e.getKeyCode() == KeyEvent.VK_Z){
-                Command c = new CommandTeleport(world.getPlayer(), world.getTick(), world.getSize());
+            } else if(e.getKeyCode() == KeyEvent.VK_L){
+                Command c = new CommandFire(world.getPlayer(), world.getTick());
+                c.execute();
+                replays.add(c);
+            } else if(e.getKeyCode() == KeyEvent.VK_W && world.atUp(world.getPlayer2())) {
+                Command c = new CommandTurnNorth(world.getPlayer2(), world.getTick());
+                c.execute();
+                replays.add(c);
+            } else if(e.getKeyCode() == KeyEvent.VK_S && world.atDown(world.getPlayer2())) {
+                Command c = new CommandTurnSouth(world.getPlayer2(), world.getTick());
+                c.execute();
+                replays.add(c);
+            } else if(e.getKeyCode() == KeyEvent.VK_A && world.atLeft(world.getPlayer2())) {
+                Command c = new CommandTurnWest(world.getPlayer2(), world.getTick());
+                c.execute();
+                replays.add(c);
+            } else if(e.getKeyCode() == KeyEvent.VK_D && world.atRight(world.getPlayer2())) {
+                Command c = new CommandTurnEast(world.getPlayer2(), world.getTick());
                 c.execute();
                 replays.add(c);
             } else if(e.getKeyCode() == KeyEvent.VK_F){
-                Command c = new CommandFire(world.getPlayer(), world.getTick());
+                Command c = new CommandFire(world.getPlayer2(), world.getTick());
                 c.execute();
                 replays.add(c);
             }
