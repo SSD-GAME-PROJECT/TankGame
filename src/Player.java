@@ -3,8 +3,8 @@ public class Player extends WObject {
     public Player() {
     }
 
-    public Player(int x, int y) {
-        super(x, y);
+    public Player(int x, int y, Direction direction) {
+        super(x, y, direction);
     }
 
 }

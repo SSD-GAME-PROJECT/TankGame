@@ -38,8 +38,9 @@ public class Window extends JFrame implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         renderer.repaint();
-        gui.updateTick(world.getTick());
-        gui.updateScore(world.getHitEnemy());
+//        gui.updateTick(world.getTick());
+        gui.updateScorePlayer1(world.getplayer1HitEnemy());
+        gui.updateScorePlayer2(world.getplayer2HitEnemy());
 
         for (Command c: replays){
             if (c.getTick() == world.getTick()){
@@ -94,25 +95,52 @@ public class Window extends JFrame implements Observer {
             int perCell = size/world.getSize();
             int x = world.getPlayer().getX();
             int y = world.getPlayer().getY();
-            g.setColor(Color.green);
-            g.fillRect(x * perCell,y * perCell,perCell, perCell);
+            if(world.getPlayer().getDirection() == Direction.UP) {
+                g.drawImage(new ImageIcon("img/Player1/Up.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+            }else if(world.getPlayer().getDirection() == Direction.DOWN){
+                g.drawImage(new ImageIcon("img/Player1/Down.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+            }else if(world.getPlayer().getDirection() == Direction.LEFT){
+                g.drawImage(new ImageIcon("img/Player1/Left.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+            }else if(world.getPlayer().getDirection() == Direction.RIGHT){
+                g.drawImage(new ImageIcon("img/Player1/Right.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+            }
+//            g.setColor(Color.green);
+//            g.fillRect(x * perCell,y * perCell,perCell, perCell);
         }
 
         private void paintPlayer2(Graphics g) {
             int perCell = size/world.getSize();
             int x = world.getPlayer2().getX();
             int y = world.getPlayer2().getY();
-            g.setColor(Color.magenta);
-            g.fillRect(x * perCell,y * perCell,perCell, perCell);
+            if(world.getPlayer2().getDirection() == Direction.UP) {
+                g.drawImage(new ImageIcon("img/Player2/Up.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+            }else if(world.getPlayer2().getDirection() == Direction.DOWN){
+                g.drawImage(new ImageIcon("img/Player2/Down.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+            }else if(world.getPlayer2().getDirection() == Direction.LEFT){
+                g.drawImage(new ImageIcon("img/Player2/Left.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+            }else if(world.getPlayer2().getDirection() == Direction.RIGHT){
+                g.drawImage(new ImageIcon("img/Player2/Right.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+            }
+//            g.setColor(Color.magenta);
+//            g.fillRect(x * perCell,y * perCell,perCell, perCell);
         }
 
         private void paintEnemies(Graphics g) {
             int perCell = size/world.getSize();
-            g.setColor(Color.red);
+//            g.setColor(Color.red);
             for(Enemy e : world.getEnemies()) {
                 int x = e.getX();
                 int y = e.getY();
-                g.fillRect(x * perCell, y * perCell,perCell, perCell);
+                if(e.getDirection() == Direction.UP) {
+                    g.drawImage(new ImageIcon("img/Enemy/Up.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+                }else if(e.getDirection() == Direction.DOWN){
+                    g.drawImage(new ImageIcon("img/Enemy/Down.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+                }else if(e.getDirection() == Direction.LEFT){
+                    g.drawImage(new ImageIcon("img/Enemy/Left.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+                }else if(e.getDirection() == Direction.RIGHT){
+                    g.drawImage(new ImageIcon("img/Enemy/Right.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
+                }
+//                g.fillRect(x * perCell, y * perCell,perCell, perCell);
             }
         }
 
@@ -122,20 +150,23 @@ public class Window extends JFrame implements Observer {
             for (Bullet bullet: world.getPlayer().getBullets()) {
                 int x = bullet.getX();
                 int y = bullet.getY();
-                g.fillRect(x * perCell, y * perCell, perCell, perCell);
+                g.fillOval(x * perCell + 6, y * perCell + 6, 8, 8);
+//                g.fillRect(x * perCell, y * perCell, perCell, perCell);
             }
             g.setColor(Color.DARK_GRAY);
             for (Bullet bullet: world.getPlayer2().getBullets()) {
                 int x = bullet.getX();
                 int y = bullet.getY();
-                g.fillRect(x * perCell, y * perCell, perCell, perCell);
+                g.fillOval(x * perCell + 6, y * perCell + 6, 8, 8);
+//                g.fillRect(x * perCell, y * perCell, 1, 1);
             }
             g.setColor(Color.cyan);
             for (Enemy enemy: world.getEnemies()) {
                 for (Bullet bullet : enemy.getBullets()) {
                     int x = bullet.getX();
                     int y = bullet.getY();
-                    g.fillRect(x * perCell, y * perCell, perCell, perCell);
+                    g.fillOval(x * perCell + 6, y * perCell + 6, 8, 8);
+//                    g.fillRect(x * perCell, y * perCell, perCell, perCell);
                 }
             }
         }
@@ -177,7 +208,8 @@ public class Window extends JFrame implements Observer {
     class Gui extends JPanel {
 
         private JLabel tickLabel;
-        private JLabel scoreLabel;
+        private JLabel player1ScoreLabel;
+        private JLabel player2ScoreLabel;
         private JButton startButton;
         private JButton replayButton;
         private JLabel gameOverLabel;
@@ -185,10 +217,12 @@ public class Window extends JFrame implements Observer {
 
         public Gui() {
             setLayout(new FlowLayout());
-            tickLabel = new JLabel("Tick: 0");
-            add(tickLabel);
-            scoreLabel = new JLabel("Score: 0");
-            add(scoreLabel);
+//            tickLabel = new JLabel("Tick: 0  ");
+//            add(tickLabel);
+            player1ScoreLabel = new JLabel("Player1's Score: 0  ");
+            add(player1ScoreLabel);
+            player2ScoreLabel = new JLabel("Player2's Score: 0  ");
+            add(player2ScoreLabel);
             startButton = new JButton("Start");
             startButton.addActionListener(new ActionListener() {
                 @Override
@@ -222,12 +256,16 @@ public class Window extends JFrame implements Observer {
             add(winningLabel);
         }
 
-        public void updateTick(int tick) {
-            tickLabel.setText("Tick: " + tick);
+//        public void updateTick(int tick) {
+//            tickLabel.setText("Tick: " + tick  + "  ");
+//        }
+
+        public void updateScorePlayer1(int score) {
+            player1ScoreLabel.setText("Player1's Score: " + score + "  ");
         }
 
-        public void updateScore(int score) {
-            scoreLabel.setText("Score: " + score);
+        public void updateScorePlayer2(int score) {
+            player2ScoreLabel.setText("Player2's Score: " + score + "  ");
         }
 
         public void showGameOverLabel() {

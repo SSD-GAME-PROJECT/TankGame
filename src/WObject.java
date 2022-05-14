@@ -16,9 +16,10 @@ public abstract class WObject {
     public WObject() {
     }
 
-    public WObject(int x, int y) {
+    public WObject(int x, int y, Direction direction) {
         this.x = x;
         this.y = y;
+        this.direction = direction;
     }
 
     public void turnNorth() {
@@ -45,10 +46,10 @@ public abstract class WObject {
         dy = 0;
     }
 
-    public void move(String nearBlock) {
-        if(((nearBlock == "up" || y == 0) && dy == -1) || ((nearBlock == "down" || y == 24) && dy == 1 )) {
+    public void move(List nearBlock, WObject obj) {
+        if(((nearBlock.contains("up") || y == 0 || (obj.getY() == y-1 && obj.getX() == x)) && dy == -1) || ((nearBlock.contains("down") || y == 24 || (obj.getY() == y+1 && obj.getX() == x)) && dy == 1 )) {
             dy = 0;
-        }else if(((nearBlock == "right" || x == 24) && dx == 1) || ((nearBlock == "left" || x == 0) && dx == -1)) {
+        }else if(((nearBlock.contains("right")|| x == 24 || (obj.getX() == x+1 && obj.getY() == y)) && dx == 1) || ((nearBlock.contains("left") || x == 0 || (obj.getX() == x-1 && obj.getY() == y)) && dx == -1)) {
             dx = 0;
         }
         this.x += dx;
@@ -56,27 +57,27 @@ public abstract class WObject {
 
     }
 
-    public void moveTankEnermy(int disX, int disY, int tick, String nearBlock) {
+    public void moveTankEnermy(int disX, int disY, int tick, List nearBlock) {
         if (this.x == disX && this.y > disY) {
-            if(nearBlock != "up") {
+            if(!nearBlock.contains("up")) {
                 this.y -= 1;
                 direction = Direction.UP;
             }
             this.fire();
         } else if (this.x == disX && this.y < disY) {
-            if(nearBlock!="down") {
+            if(!nearBlock.contains("down")) {
                 this.y += 1;
                 direction = Direction.DOWN;
             }
             this.fire();
         } else if (this.x > disX && this.y == disY) {
-            if(nearBlock!="left") {
+            if(!nearBlock.contains("left")) {
                 this.x -= 1;
                 direction = Direction.LEFT;
             }
             this.fire();
         } else if (this.x < disX && this.y == disY) {
-            if(nearBlock!="right") {
+            if(!nearBlock.contains("right")) {
                 this.x += 1;
                 direction = Direction.RIGHT;
             }
@@ -108,9 +109,10 @@ public abstract class WObject {
         dx = dy = 0;
     }
 
-    public void setPosition(int x, int y) {
+    public void setPosition(int x, int y, Direction direction) {
         this.x = x;
         this.y = y;
+        this.direction = direction;
     }
 
     public boolean hit(WObject wObj) {
@@ -123,5 +125,9 @@ public abstract class WObject {
 
     public boolean collision(Bullet b) {
         return b.getX() == this.x && b.getY() == this.y;
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 }
