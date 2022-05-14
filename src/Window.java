@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,7 +29,7 @@ public class Window extends JFrame implements Observer {
         add(gui, BorderLayout.SOUTH);
         world = new World(25);
         world.addObserver(this);
-        setSize(size, size+70);
+        setSize(size, size+120);
         setAlwaysOnTop(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle("Tank Game");
@@ -68,7 +69,9 @@ public class Window extends JFrame implements Observer {
             super.paint(g);
             paintGrids(g);
             paintPlayer(g);
-            paintPlayer2(g);
+            if (!world.isSingleMode()) {
+                paintPlayer2(g);
+            }
             paintEnemies(g);
             paintBullets(g);
             paintTreeBlock(g);
@@ -154,11 +157,13 @@ public class Window extends JFrame implements Observer {
 //                g.fillRect(x * perCell, y * perCell, perCell, perCell);
             }
             g.setColor(Color.DARK_GRAY);
-            for (Bullet bullet: world.getPlayer2().getBullets()) {
-                int x = bullet.getX();
-                int y = bullet.getY();
-                g.fillOval(x * perCell + 6, y * perCell + 6, 8, 8);
+            if (!world.isSingleMode()) {
+                for (Bullet bullet : world.getPlayer2().getBullets()) {
+                    int x = bullet.getX();
+                    int y = bullet.getY();
+                    g.fillOval(x * perCell + 6, y * perCell + 6, 8, 8);
 //                g.fillRect(x * perCell, y * perCell, 1, 1);
+                }
             }
             g.setColor(Color.cyan);
             for (Enemy enemy: world.getEnemies()) {
@@ -210,29 +215,59 @@ public class Window extends JFrame implements Observer {
         private JLabel tickLabel;
         private JLabel player1ScoreLabel;
         private JLabel player2ScoreLabel;
-        private JButton startButton;
+        private JButton startMultiButton;
+        private JButton  startSingleButton;
         private JButton replayButton;
         private JLabel gameOverLabel;
         private JLabel winningLabel;
 
         public Gui() {
-            setLayout(new FlowLayout());
+            setLayout(new GridBagLayout());
+            GridBagConstraints c = new GridBagConstraints();
 //            tickLabel = new JLabel("Tick: 0  ");
 //            add(tickLabel);
             player1ScoreLabel = new JLabel("Player1's Score: 0  ");
-            add(player1ScoreLabel);
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.weightx = 0.5;
+            c.gridx = 0;
+            c.gridy = 0;
+            add(player1ScoreLabel, c);
             player2ScoreLabel = new JLabel("Player2's Score: 0  ");
-            add(player2ScoreLabel);
-            startButton = new JButton("Start");
-            startButton.addActionListener(new ActionListener() {
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.weightx = 0.5;
+            c.gridx = 2;
+            c.gridy = 0;
+            add(player2ScoreLabel, c);
+            startSingleButton = new JButton("SinglePlayer");
+            startSingleButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    world.start();
-                    startButton.setEnabled(false);
+                    world.startSinglePlayer();
+                    startSingleButton.setEnabled(false);
+                    startMultiButton.setEnabled(false);
                     Window.this.requestFocus();
                 }
             });
-            add(startButton);
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.weightx = 0.5;
+            c.gridx = 0;
+            c.gridy = 1;
+            add(startSingleButton, c);
+            startMultiButton = new JButton("MultiPlayer");
+            startMultiButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    world.start();
+                    startSingleButton.setEnabled(false);
+                    startMultiButton.setEnabled(false);
+                    Window.this.requestFocus();
+                }
+            });
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.weightx = 0.5;
+            c.gridx = 2;
+            c.gridy = 1;
+            add(startMultiButton, c);
             replayButton = new JButton("Replay");
             replayButton.addActionListener(new ActionListener() {
                 @Override
@@ -244,16 +279,27 @@ public class Window extends JFrame implements Observer {
                     Window.this.requestFocus();
                 }
             });
+//            JPanel panel = new JPanel();
+//            add(panel, BorderLayout.SOUTH);
             replayButton.setEnabled(false);
-            add(replayButton);
+            c.fill = GridBagConstraints.CENTER;
+            c.gridx = 1;
+            c.gridy = 2;
+            add(replayButton, c);
             gameOverLabel = new JLabel("GAME OVER");
             gameOverLabel.setForeground(Color.red);
             gameOverLabel.setVisible(false);
-            add(gameOverLabel);
+            c.fill = GridBagConstraints.CENTER;
+            c.gridx = 1;
+            c.gridy = 3;
+            add(gameOverLabel, c);
             winningLabel = new JLabel("GREAT JOB");
             winningLabel.setForeground(Color.GREEN);
             winningLabel.setVisible(false);
-            add(winningLabel);
+            c.fill = GridBagConstraints.CENTER;
+            c.gridx = 1;
+            c.gridy = 3;
+            add(winningLabel, c);
         }
 
 //        public void updateTick(int tick) {

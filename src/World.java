@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.stream.IntStream;
 
 public class World extends Observable {
 
@@ -11,6 +10,7 @@ public class World extends Observable {
     private Thread thread;
     private boolean notOver;
     private long delayed = 250;
+    private boolean singleMode;
     private List<Enemy> enemies = new ArrayList<Enemy>();
 
     private List<BlockTree> treeBlocks = new ArrayList<BlockTree>();
@@ -27,27 +27,31 @@ public class World extends Observable {
         player1HitEnemy = 0;
         player2HitEnemy = 0;
         setEnemies();
-        player = new Player(13, 24, Direction.UP);
-        player2 = new Player(5, 8, Direction.UP);
+        createPlayer();
+//        player = new Player(13, 24, Direction.UP);
+//        player2 = new Player(5, 8, Direction.UP);
         setTreeBlocks();
         setSteelBlocks();
         setBrickBlocks();
         setStreamBlocks();
     }
 
+    private void createPlayer(){
+        player = new Player(13, 24, Direction.UP);
+        if (!singleMode) {
+            player2 = new Player(5, 8, Direction.UP);
+        }
+    }
+
     public void start() {
+        singleMode = false;
         player.reset();
         player.setPosition(13, 24, Direction.UP);
         player2.reset();
         player2.setPosition(5, 8, Direction.UP);
         setEnemies();
         setBrickBlocks();
-//        for(int i = 0; i < enemies.size(); i++) {
-//            enemies.get(i).setPosition(enemiesStart.get(i).getX(), enemiesStart.get(i).getY(), Direction.UP);
-//        }
-//        for(int i=0; i<brickBlocks.size();i++){
-//            brickBlocks.get(i).setPosition(brickBlocksStart.get(i).getX(), brickBlocksStart.get(i).getY());
-//        }
+
         tick = 0;
         notOver = true;
         win = false;
@@ -95,41 +99,72 @@ public class World extends Observable {
 
                     // enemy move and shoot the bullet
                     for(Enemy enemy: enemies) {
-                        enemy.moveTankEnermy(player.getX(), player.getY(), tick, where(enemy));
-                        enemy.moveTankEnermy(player2.getX(), player2.getY(), tick, where(enemy));
+                        enemy.moveTankEnemy(player.getX(), player.getY(), tick, where(enemy));
+                        enemy.moveTankEnemy(player2.getX(), player2.getY(), tick, where(enemy));
                         for (Bullet bullet : enemy.getBullets()){
                             bullet.move();
                         }
                     }
                     // player collision
                     playerBulletCollision();
-                    // check bullet collision
-//                    if (!enemies.isEmpty()) {
-//                        for (int e = 0; e < enemies.size(); e++){
-//                            for (int b = 0; b < enemies.get(e).getBullets().size(); b++){
-//                                for (int bp = 0; bp < player.getBullets().size(); bp++) {
-//                                    if (enemies.get(e).getBullets().get(b).bulletCollision(player.getBullets().get(bp))) {
-//                                        player.getBullets().remove(player.getBullets().get(bp));
-//                                        enemies.get(e).getBullets().remove(enemies.get(e).getBullets().get(bp));
-//                                    }
-//                                }
-//                            }
-//                        }
-//                        for (Enemy e : enemies) {
-//                            for (Bullet enemyBullet : e.getBullets()) {
-//                                player.getBullets().removeIf(enemyBullet::bulletCollision);
-//                                for (Bullet bp : player.getBullets()) {
-//                                    e.getBullets().removeIf(bp::bulletCollision);
-//                                }
-//                            }
-//                        }
-//                        for (Enemy e : enemies) {
-//                            for (Bullet enemyBullet : e.getBullets()) {
-//                                player2.getBullets().removeIf(enemyBullet::bulletCollision);
-//                            }
-//                        }
-//                    }
+                    hitBrick();
+                    hitSteel();
+                    checkCollisions();
+                    setChanged();
+                    notifyObservers();
+                    waitFor(delayed);
+                }
+            }
+        };
+        thread.start();
+    }
 
+    public void startSinglePlayer(){
+        singleMode = true;
+        player.reset();
+        player.setPosition(13, 24, Direction.UP);
+        setEnemies();
+        setBrickBlocks();
+
+        tick = 0;
+        notOver = true;
+        win = false;
+        player1HitEnemy = 0;
+        player2HitEnemy = 0;
+        thread = new Thread() {
+            @Override
+            public void run() {
+                while(notOver&&!win) {
+                    tick++;
+                    player.move(where(player), player2);
+                    if (!player.getBullets().isEmpty()) {
+                        for (int b = 0; b < player.getBullets().size(); b++) {
+                            player.getBullets().get(b).move();
+                        }
+                    }
+
+                    for(int i =0; i < enemies.size(); i++) {
+                        for(int b = 0; b < player.getBullets().size(); b++){
+                            if (enemies.get(i).collision(player.getBullets().get(b))){
+                                player.getBullets().remove(player.getBullets().get(b));
+                                enemies.remove(enemies.get(i));
+                                player1HitEnemy++;
+                            }
+                        }
+                    }
+
+                    if(player1HitEnemy == enemies.size()){
+                        win = true;
+                    }
+
+                    // enemy move and shoot the bullet
+                    for(Enemy enemy: enemies) {
+                        enemy.moveTankEnemy(player.getX(), player.getY(), tick, where(enemy));
+                        for (Bullet bullet : enemy.getBullets()){
+                            bullet.move();
+                        }
+                    }
+                    // player collision
                     playerBulletCollision();
                     hitBrick();
                     hitSteel();
@@ -149,9 +184,11 @@ public class World extends Observable {
                 notOver = false;
             }
         }
-        for (Bullet bp2 : player2.getBullets()) {
-            if (player.collision(bp2)) {
+        if (!singleMode) {
+            for (Bullet bp2 : player2.getBullets()) {
+                if (player.collision(bp2)) {
                     notOver = false;
+                }
             }
         }
     }
@@ -166,7 +203,7 @@ public class World extends Observable {
             for (Bullet b : e.getBullets())
                 if(player.collision(b)){
                     notOver = false;
-                } else if(player2.collision(b)){
+                } else if(player2.collision(b) && !singleMode){
                     notOver = false;
                 }
         }
@@ -203,13 +240,15 @@ public class World extends Observable {
                 }
             }
         }
-        if (!player2.getBullets().isEmpty()) {
-            for (int b = 0; b < player2.getBullets().size(); b++) {
-                for (int brick = 0; brick < brickBlocks.size(); brick++) {
-                    if (brickBlocks.get(brick).isBulletHit(player2.getBullets().get(b))) {
-                        player2.getBullets().remove(player2.getBullets().get(b));
-                        brickBlocks.remove(brickBlocks.get(brick));
-                      break;
+        if (!singleMode) {
+            if (!player2.getBullets().isEmpty()) {
+                for (int b = 0; b < player2.getBullets().size(); b++) {
+                    for (int brick = 0; brick < brickBlocks.size(); brick++) {
+                        if (brickBlocks.get(brick).isBulletHit(player2.getBullets().get(b))) {
+                            player2.getBullets().remove(player2.getBullets().get(b));
+                            brickBlocks.remove(brickBlocks.get(brick));
+                            break;
+                        }
                     }
                 }
             }
@@ -235,11 +274,13 @@ public class World extends Observable {
                 }
             }
         }
-        for(int b = 0; b < player2.getBullets().size(); b++){
-            for (int steel=0; steel<steelBlocks.size(); steel++) {
-                if (steelBlocks.get(steel).isBulletHit(player2.getBullets().get(b))) {
-                    player2.getBullets().remove(player2.getBullets().get(b));
-                    break;
+        if (!singleMode) {
+            for (int b = 0; b < player2.getBullets().size(); b++) {
+                for (int steel = 0; steel < steelBlocks.size(); steel++) {
+                    if (steelBlocks.get(steel).isBulletHit(player2.getBullets().get(b))) {
+                        player2.getBullets().remove(player2.getBullets().get(b));
+                        break;
+                    }
                 }
             }
         }
@@ -497,5 +538,9 @@ public class World extends Observable {
 
     public Direction getDirection(WObject obj){
         return obj.getDirection();
+    }
+
+    public boolean isSingleMode(){
+        return singleMode;
     }
 }

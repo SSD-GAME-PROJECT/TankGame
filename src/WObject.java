@@ -57,7 +57,7 @@ public abstract class WObject {
 
     }
 
-    public void moveTankEnermy(int disX, int disY, int tick, List nearBlock) {
+    public void moveTankEnemy(int disX, int disY, int tick, List nearBlock) {
         if (this.x == disX && this.y > disY) {
             if(!nearBlock.contains("up")) {
                 this.y -= 1;
