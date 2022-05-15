@@ -39,7 +39,6 @@ public class Window extends JFrame implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         renderer.repaint();
-//        gui.updateTick(world.getTick());
         gui.updateScorePlayer1(world.getplayer1HitEnemy());
         gui.updateScorePlayer2(world.getplayer2HitEnemy());
 
@@ -107,8 +106,6 @@ public class Window extends JFrame implements Observer {
             }else if(world.getPlayer().getDirection() == Direction.RIGHT){
                 g.drawImage(new ImageIcon("img/Player1/Right.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
             }
-//            g.setColor(Color.green);
-//            g.fillRect(x * perCell,y * perCell,perCell, perCell);
         }
 
         private void paintPlayer2(Graphics g) {
@@ -124,13 +121,10 @@ public class Window extends JFrame implements Observer {
             }else if(world.getPlayer2().getDirection() == Direction.RIGHT){
                 g.drawImage(new ImageIcon("img/Player2/Right.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
             }
-//            g.setColor(Color.magenta);
-//            g.fillRect(x * perCell,y * perCell,perCell, perCell);
         }
 
         private void paintEnemies(Graphics g) {
             int perCell = size/world.getSize();
-//            g.setColor(Color.red);
             for(Enemy e : world.getEnemies()) {
                 int x = e.getX();
                 int y = e.getY();
@@ -143,7 +137,6 @@ public class Window extends JFrame implements Observer {
                 }else if(e.getDirection() == Direction.RIGHT){
                     g.drawImage(new ImageIcon("img/Enemy/Right.png").getImage(), x * perCell, y * perCell, perCell, perCell, null, null);
                 }
-//                g.fillRect(x * perCell, y * perCell,perCell, perCell);
             }
         }
 
@@ -154,7 +147,6 @@ public class Window extends JFrame implements Observer {
                 int x = bullet.getX();
                 int y = bullet.getY();
                 g.fillOval(x * perCell + 6, y * perCell + 6, 8, 8);
-//                g.fillRect(x * perCell, y * perCell, perCell, perCell);
             }
             g.setColor(Color.DARK_GRAY);
             if (!world.isSingleMode()) {
@@ -162,7 +154,6 @@ public class Window extends JFrame implements Observer {
                     int x = bullet.getX();
                     int y = bullet.getY();
                     g.fillOval(x * perCell + 6, y * perCell + 6, 8, 8);
-//                g.fillRect(x * perCell, y * perCell, 1, 1);
                 }
             }
             g.setColor(Color.cyan);
@@ -171,7 +162,6 @@ public class Window extends JFrame implements Observer {
                     int x = bullet.getX();
                     int y = bullet.getY();
                     g.fillOval(x * perCell + 6, y * perCell + 6, 8, 8);
-//                    g.fillRect(x * perCell, y * perCell, perCell, perCell);
                 }
             }
         }
@@ -212,7 +202,6 @@ public class Window extends JFrame implements Observer {
 
     class Gui extends JPanel {
 
-        private JLabel tickLabel;
         private JLabel player1ScoreLabel;
         private JLabel player2ScoreLabel;
         private JButton startMultiButton;
@@ -224,8 +213,6 @@ public class Window extends JFrame implements Observer {
         public Gui() {
             setLayout(new GridBagLayout());
             GridBagConstraints c = new GridBagConstraints();
-//            tickLabel = new JLabel("Tick: 0  ");
-//            add(tickLabel);
             player1ScoreLabel = new JLabel("Player1's Score: 0  ");
             c.fill = GridBagConstraints.HORIZONTAL;
             c.weightx = 0.5;
@@ -285,11 +272,8 @@ public class Window extends JFrame implements Observer {
                     world.getPlayer().getBullets().clear();
                     world.getPlayer2().getBullets().clear();
                     replayButton.setEnabled(false);
-                    Window.this.requestFocus();
                 }
             });
-//            JPanel panel = new JPanel();
-//            add(panel, BorderLayout.SOUTH);
             replayButton.setEnabled(false);
             c.fill = GridBagConstraints.CENTER;
             c.gridx = 1;
@@ -310,10 +294,6 @@ public class Window extends JFrame implements Observer {
             c.gridy = 1;
             add(winningLabel, c);
         }
-
-//        public void updateTick(int tick) {
-//            tickLabel.setText("Tick: " + tick  + "  ");
-//        }
 
         public void updateScorePlayer1(int score) {
             player1ScoreLabel.setText("Player1's Score: " + score + "  ");

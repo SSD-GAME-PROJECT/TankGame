@@ -13,9 +13,6 @@ public abstract class WObject {
     private final long PERIOD = 250L; // Adjust to suit timing
     private long lastTime = System.currentTimeMillis() - PERIOD;
 
-    public WObject() {
-    }
-
     public WObject(int x, int y, Direction direction) {
         this.x = x;
         this.y = y;

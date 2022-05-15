@@ -28,8 +28,6 @@ public class World extends Observable {
         player2HitEnemy = 0;
         setEnemies();
         createPlayer();
-//        player = new Player(13, 24, Direction.UP);
-//        player2 = new Player(5, 8, Direction.UP);
         setTreeBlocks();
         setSteelBlocks();
         setBrickBlocks();
@@ -424,22 +422,6 @@ public class World extends Observable {
 
     public Player getPlayer2(){
         return player2;
-    }
-
-    public void turnPlayerNorth() {
-        player.turnNorth();
-    }
-
-    public void turnPlayerSouth() {
-        player.turnSouth();
-    }
-
-    public void turnPlayerWest() {
-        player.turnWest();
-    }
-
-    public void turnPlayerEast() {
-        player.turnEast();
     }
 
     private void setEnemies(){

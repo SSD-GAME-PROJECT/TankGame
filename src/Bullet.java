@@ -9,10 +9,6 @@ public class Bullet {
         this.direction = direction;
     }
 
-    public Direction getDirection() {
-        return direction;
-    }
-
     public int getX() {
         return x;
     }
@@ -28,10 +24,6 @@ public class Bullet {
 
     public void move(){
         this.setPosition(getX() + direction.getX(), getY() + direction.getY());
-    }
-
-    public boolean bulletCollision(Bullet b){
-        return this.x == b.getX() && this.y == b.getY();
     }
 }
 
