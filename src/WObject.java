@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public abstract class WObject {
 
@@ -79,6 +80,42 @@ public abstract class WObject {
                 direction = Direction.RIGHT;
             }
             this.fire();
+        }
+        List<Direction> directions = new ArrayList<Direction>();
+        directions.clear();
+        directions.add(Direction.RIGHT);
+        directions.add(Direction.LEFT);
+        directions.add(Direction.UP);
+        directions.add(Direction.DOWN);
+        if (tick%2==0){
+            Random random = new Random();
+            Direction directRandom = directions.get(random.nextInt(3));
+            if (directRandom == Direction.RIGHT && direction != Direction.RIGHT){
+                if(((nearBlock.contains("up") || y == 0 && dy == -1) || ((nearBlock.contains("down") || y == 24 && dy == 1 )))){
+                    dy = 0;
+                }else if(((nearBlock.contains("right")|| x == 24 && dx == 1) || ((nearBlock.contains("left") || x == 0 && dx == -1)))) {
+                    dx = 0;
+                }
+                if(!nearBlock.contains("right")) {
+                    this.x += 1;
+                    direction = Direction.RIGHT;
+                }
+            } else if (directRandom == Direction.LEFT && direction != Direction.LEFT) {
+                if (!nearBlock.contains("left")) {
+                    this.x += -1;
+                    direction = Direction.LEFT;
+                }
+            } else if (directRandom == Direction.UP && direction != Direction.UP) {
+                if (!nearBlock.contains("up")) {
+                    this.y += 1;
+                    direction = Direction.UP;
+                }
+            } else if  (directRandom == Direction.DOWN && direction != Direction.DOWN) {
+                if (!nearBlock.contains("down")) {
+                    this.y -= 1;
+                    direction = Direction.DOWN;
+                }
+            }
         }
     }
 
