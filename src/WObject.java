@@ -45,9 +45,9 @@ public abstract class WObject {
     }
 
     public void move(List nearBlock, WObject obj) {
-        if(((nearBlock.contains("up") || y == 0 || (obj.getY() == y-1 && obj.getX() == x)) && dy == -1) || ((nearBlock.contains("down") || y == 24 || (obj.getY() == y+1 && obj.getX() == x)) && dy == 1 )) {
+        if (((nearBlock.contains("up") || y == 0 || (obj.getY() == y - 1 && obj.getX() == x)) && dy == -1) || ((nearBlock.contains("down") || y == 24 || (obj.getY() == y + 1 && obj.getX() == x)) && dy == 1)) {
             dy = 0;
-        }else if(((nearBlock.contains("right")|| x == 24 || (obj.getX() == x+1 && obj.getY() == y)) && dx == 1) || ((nearBlock.contains("left") || x == 0 || (obj.getX() == x-1 && obj.getY() == y)) && dx == -1)) {
+        } else if (((nearBlock.contains("right") || x == 24 || (obj.getX() == x + 1 && obj.getY() == y)) && dx == 1) || ((nearBlock.contains("left") || x == 0 || (obj.getX() == x - 1 && obj.getY() == y)) && dx == -1)) {
             dx = 0;
         }
         this.x += dx;
@@ -57,45 +57,46 @@ public abstract class WObject {
 
     public void moveTankEnemy(int disX, int disY, int tick, List nearBlock) {
         if (this.x == disX && this.y > disY) {
-            if(!nearBlock.contains("up")) {
+            if (!nearBlock.contains("up")) {
                 direction = Direction.UP;
             }
             this.fire();
         } else if (this.x == disX && this.y < disY) {
-            if(!nearBlock.contains("down")) {
+            if (!nearBlock.contains("down")) {
                 direction = Direction.DOWN;
             }
             this.fire();
         } else if (this.x > disX && this.y == disY) {
-            if(!nearBlock.contains("left")) {
+            if (!nearBlock.contains("left")) {
                 direction = Direction.LEFT;
             }
             this.fire();
         } else if (this.x < disX && this.y == disY) {
-            if(!nearBlock.contains("right")) {
+            if (!nearBlock.contains("right")) {
                 direction = Direction.RIGHT;
             }
             this.fire();
         }
-        List<Direction> directions = new ArrayList<Direction>();
-        directions.clear();
-        directions.add(Direction.RIGHT);
-        directions.add(Direction.LEFT);
-        directions.add(Direction.UP);
-        directions.add(Direction.DOWN);
-        if (tick%2==0){
-            Random random = new Random();
-            Direction directRandom = directions.get(random.nextInt(4));
-            if (directRandom == Direction.RIGHT && direction != Direction.RIGHT && !nearBlock.contains("right") && x <= 23){
+        if (tick % 4 == 0) {
+            if (direction != Direction.RIGHT && !nearBlock.contains("right") && x <= 23) {
                 this.x += 1;
                 direction = Direction.RIGHT;
-            } else if (directRandom == Direction.LEFT && direction != Direction.LEFT && !nearBlock.contains("left") && x >= 1) {
-                this.x += -1;
-                direction = Direction.LEFT;
-            } else if (directRandom == Direction.UP && direction != Direction.UP && !nearBlock.contains("up") && y >= 1) {
+            }
+        }
+        if (tick % 4 == 1) {
+            if (direction != Direction.UP && !nearBlock.contains("up") && y >= 1) {
                 this.y -= 1;
                 direction = Direction.UP;
-            } else if  (directRandom == Direction.DOWN && direction != Direction.DOWN && !nearBlock.contains("down") && y <= 23) {
+            }
+        }
+        if (tick % 5 == 2) {
+            if (direction != Direction.LEFT && !nearBlock.contains("left") && x >= 1) {
+                this.x += -1;
+                direction = Direction.LEFT;
+            }
+        }
+        if (tick % 4 == 3){
+            if (direction != Direction.DOWN && !nearBlock.contains("down") && y <= 23) {
                 this.y += 1;
                 direction = Direction.DOWN;
             }

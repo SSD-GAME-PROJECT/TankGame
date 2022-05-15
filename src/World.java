@@ -150,7 +150,6 @@ public class World extends Observable {
                             }
                         }
                     }
-                    System.out.println(enemies.size());
                     if(enemies.isEmpty()){
                         win = true;
                     }
