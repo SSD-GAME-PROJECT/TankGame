@@ -232,17 +232,20 @@ public class Window extends JFrame implements Observer {
             c.gridx = 0;
             c.gridy = 0;
             add(player1ScoreLabel, c);
+            player1ScoreLabel.setVisible(false);
             player2ScoreLabel = new JLabel("Player2's Score: 0  ");
             c.fill = GridBagConstraints.HORIZONTAL;
             c.weightx = 0.5;
             c.gridx = 2;
             c.gridy = 0;
             add(player2ScoreLabel, c);
+            player2ScoreLabel.setVisible(false);
             startSingleButton = new JButton("SinglePlayer");
             startSingleButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     world.startSinglePlayer();
+                    player1ScoreLabel.setVisible(true);
                     startSingleButton.setEnabled(false);
                     startMultiButton.setEnabled(false);
                     Window.this.requestFocus();
@@ -258,6 +261,8 @@ public class Window extends JFrame implements Observer {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     world.start();
+                    player1ScoreLabel.setVisible(true);
+                    player2ScoreLabel.setVisible(true);
                     startSingleButton.setEnabled(false);
                     startMultiButton.setEnabled(false);
                     Window.this.requestFocus();
@@ -272,7 +277,11 @@ public class Window extends JFrame implements Observer {
             replayButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    world.start();
+                    if(player2ScoreLabel.isVisible()) {
+                        world.start();
+                    } else{
+                        world.startSinglePlayer();
+                    }
                     world.getPlayer().getBullets().clear();
                     world.getPlayer2().getBullets().clear();
                     replayButton.setEnabled(false);
