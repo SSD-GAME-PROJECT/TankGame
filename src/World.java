@@ -39,7 +39,7 @@ public class World extends Observable {
     private void createPlayer(){
         player = new Player(13, 24, Direction.UP);
         if (!singleMode) {
-            player2 = new Player(5, 8, Direction.UP);
+            player2 = new Player(100, 100, Direction.UP);
         }
     }
 
