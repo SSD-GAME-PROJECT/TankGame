@@ -58,25 +58,21 @@ public abstract class WObject {
     public void moveTankEnemy(int disX, int disY, int tick, List nearBlock) {
         if (this.x == disX && this.y > disY) {
             if(!nearBlock.contains("up")) {
-                this.y -= 1;
                 direction = Direction.UP;
             }
             this.fire();
         } else if (this.x == disX && this.y < disY) {
             if(!nearBlock.contains("down")) {
-                this.y += 1;
                 direction = Direction.DOWN;
             }
             this.fire();
         } else if (this.x > disX && this.y == disY) {
             if(!nearBlock.contains("left")) {
-                this.x -= 1;
                 direction = Direction.LEFT;
             }
             this.fire();
         } else if (this.x < disX && this.y == disY) {
             if(!nearBlock.contains("right")) {
-                this.x += 1;
                 direction = Direction.RIGHT;
             }
             this.fire();
@@ -89,32 +85,19 @@ public abstract class WObject {
         directions.add(Direction.DOWN);
         if (tick%2==0){
             Random random = new Random();
-            Direction directRandom = directions.get(random.nextInt(3));
-            if (directRandom == Direction.RIGHT && direction != Direction.RIGHT){
-                if(((nearBlock.contains("up") || y == 0 && dy == -1) || ((nearBlock.contains("down") || y == 24 && dy == 1 )))){
-                    dy = 0;
-                }else if(((nearBlock.contains("right")|| x == 24 && dx == 1) || ((nearBlock.contains("left") || x == 0 && dx == -1)))) {
-                    dx = 0;
-                }
-                if(!nearBlock.contains("right")) {
-                    this.x += 1;
-                    direction = Direction.RIGHT;
-                }
-            } else if (directRandom == Direction.LEFT && direction != Direction.LEFT) {
-                if (!nearBlock.contains("left")) {
-                    this.x += -1;
-                    direction = Direction.LEFT;
-                }
-            } else if (directRandom == Direction.UP && direction != Direction.UP) {
-                if (!nearBlock.contains("up")) {
-                    this.y += 1;
-                    direction = Direction.UP;
-                }
-            } else if  (directRandom == Direction.DOWN && direction != Direction.DOWN) {
-                if (!nearBlock.contains("down")) {
-                    this.y -= 1;
-                    direction = Direction.DOWN;
-                }
+            Direction directRandom = directions.get(random.nextInt(4));
+            if (directRandom == Direction.RIGHT && direction != Direction.RIGHT && !nearBlock.contains("right") && x <= 23){
+                this.x += 1;
+                direction = Direction.RIGHT;
+            } else if (directRandom == Direction.LEFT && direction != Direction.LEFT && !nearBlock.contains("left") && x >= 1) {
+                this.x += -1;
+                direction = Direction.LEFT;
+            } else if (directRandom == Direction.UP && direction != Direction.UP && !nearBlock.contains("up") && y >= 1) {
+                this.y -= 1;
+                direction = Direction.UP;
+            } else if  (directRandom == Direction.DOWN && direction != Direction.DOWN && !nearBlock.contains("down") && y <= 23) {
+                this.y += 1;
+                direction = Direction.DOWN;
             }
         }
     }

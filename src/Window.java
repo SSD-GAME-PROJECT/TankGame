@@ -1,5 +1,4 @@
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,7 +28,7 @@ public class Window extends JFrame implements Observer {
         add(gui, BorderLayout.SOUTH);
         world = new World(25);
         world.addObserver(this);
-        setSize(size, size+120);
+        setSize(size, size+105);
         setAlwaysOnTop(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle("Tank Game");
@@ -39,8 +38,8 @@ public class Window extends JFrame implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         renderer.repaint();
-        gui.updateScorePlayer1(world.getplayer1HitEnemy());
-        gui.updateScorePlayer2(world.getplayer2HitEnemy());
+        gui.updateScorePlayer1(world.getPlayer1HitEnemy());
+        gui.updateScorePlayer2(world.getPlayer2HitEnemy());
 
         for (Command c: replays){
             if (c.getTick() == world.getTick()){
@@ -264,7 +263,7 @@ public class Window extends JFrame implements Observer {
             replayButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if(player2ScoreLabel.isVisible()) {
+                    if(!world.isSingleMode()) {
                         world.start();
                     } else{
                         world.startSinglePlayer();

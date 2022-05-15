@@ -506,20 +506,16 @@ public class World extends Observable {
         return steelBlocks;
     }
 
-    public int getplayer1HitEnemy(){
+    public int getPlayer1HitEnemy(){
         return player1HitEnemy;
     }
 
-    public int getplayer2HitEnemy(){
+    public int getPlayer2HitEnemy(){
         return player2HitEnemy;
     }
 
     public boolean isWinning(){
         return win;
-    }
-
-    public Direction getDirection(WObject obj){
-        return obj.getDirection();
     }
 
     public boolean isSingleMode(){
