@@ -91,7 +91,7 @@ public class World extends Observable {
                             }
                         }
                     }
-                    if(player1HitEnemy+player2HitEnemy == enemies.size()){
+                    if(enemies.isEmpty()){
                         win = true;
                     }
 
@@ -150,8 +150,8 @@ public class World extends Observable {
                             }
                         }
                     }
-
-                    if(player1HitEnemy == enemies.size()){
+                    System.out.println(enemies.size());
+                    if(enemies.isEmpty()){
                         win = true;
                     }
 
