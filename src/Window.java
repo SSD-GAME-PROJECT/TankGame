@@ -300,14 +300,14 @@ public class Window extends JFrame implements Observer {
             gameOverLabel.setVisible(false);
             c.fill = GridBagConstraints.CENTER;
             c.gridx = 1;
-            c.gridy = 3;
+            c.gridy = 1;
             add(gameOverLabel, c);
             winningLabel = new JLabel("GREAT JOB");
             winningLabel.setForeground(Color.GREEN);
             winningLabel.setVisible(false);
             c.fill = GridBagConstraints.CENTER;
             c.gridx = 1;
-            c.gridy = 3;
+            c.gridy = 1;
             add(winningLabel, c);
         }
 
